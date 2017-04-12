@@ -33,15 +33,35 @@ def index():
 def articles():
     """Look up articles for geo."""
 
-    # TODO
-    return jsonify([])
+    # validate input
+    geo = request.args.get("postal_code")
+    
+    if not geo:
+        raise RuntimeError("missing postal code")
+        
+    # user function in helper.py to return JSON
+    return jsonify(lookup(geo))
+
+## Search database for city, state, zip match to query
 
 @app.route("/search")
 def search():
     """Search for places that match query."""
 
-    # TODO
-    return jsonify([])
+    # validate input
+    q = request.args.get("q") + "%"
+    if not q:
+        raise RuntimeError("missing query")
+        
+    rows = db.execute("""SELECT * 
+        FROM places
+        WHERE place_name||", "||admin_name1||", "||postal_code LIKE :q
+        OR postal_code LIKE :q
+        LIMIT 6""",
+        q=q)
+        
+    # return JSON
+    return jsonify(rows)
 
 @app.route("/update")
 def update():
