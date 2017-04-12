@@ -71,7 +71,7 @@ function addMarker(place)
         labelOrigin: new google.maps.Point(16,-10)
     }
     
-    var Marker = ({
+    var marker = new google.maps.Marker ({
         icon: icon,
         label: place.place_name + ", " + place.admin_name1,
         position: {lat: place.latitude, lng: place.longitude},
@@ -139,7 +139,7 @@ function configure()
         templates: {
             suggestion: Handlebars.compile(
                 "<div>" +
-                "{{place_name}}, {{admin_name}}, {{postal_code}}" +
+                "{{place_name}}, {{admin_name1}}, {{postal_code}}" +
                 "</div>"
             )
         }
