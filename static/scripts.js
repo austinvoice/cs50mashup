@@ -63,7 +63,46 @@ $(function() {
  */
 function addMarker(place)
 {
-    // TODO
+    // instantiate marker
+    var icon = {
+        url: "http://maps.google.com/mapfiles/kml/pal2/icon23.png",
+        size: new google.maps.Size(32,32),
+        scaledSize: new google.maps.Size(32,32),
+        labelOrigin: new google.maps.Point(16,-10)
+    }
+    
+    var Marker = ({
+        icon: icon,
+        label: place.place_name + ", " + place.admin_name1,
+        position: {lat: place.latitude, lng: place.longitude},
+        map: map
+    });
+    
+    // listen for clicks on marker
+    marker.addListener("click", function() {
+        
+        // get articles for place
+        $.getJSON(Flask.url_for("articles"), place)
+        .done(function(data,textStatus, jqKHR) {
+            
+            // build article list of links
+            var content = "<ul>"
+            for (i = 0; i < data.length; i++)
+            {
+                content += "\t<li><a ref=\"" + data[i].link + "\">" + data[i].title + "</a><li>"
+            }
+            content += "/ul>"
+            showInfo(marker, content)
+        })
+        .fail(function(jqXHR, textStatus, errorThrown) {
+            
+            // log error to browser console
+            console.log(errorThrown.toString());
+        });
+})
+        
+        // remember marker
+        markers.push(marker)
 }
 
 /**
@@ -88,6 +127,7 @@ function configure()
     });
 
     // configure typeahead
+    // updated TODO with field names
     $("#q").typeahead({
         highlight: false,
         minLength: 1
@@ -99,7 +139,7 @@ function configure()
         templates: {
             suggestion: Handlebars.compile(
                 "<div>" +
-                "TODO" +
+                "{{place_name}}, {{admin_name}}, {{postal_code}}" +
                 "</div>"
             )
         }
